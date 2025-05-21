@@ -104,7 +104,7 @@
 
   <!-- Vídeo em tela cheia -->
   <div id="videoFull" style="display:none;">
-    <video id="introVideo">
+    <video id="introVideo" controls>
       <source src="HH.mp4" type="video/mp4">
     </video>
   </div>
@@ -148,6 +148,7 @@
     const fim = document.getElementById("fim");
     const poemaFinal = document.getElementById("poemaFinal");
 
+    // Fase 1: senha 444
     senhaInput.addEventListener("keydown", function (e) {
       if (e.key === "Enter") {
         const senha = senhaInput.value.trim().toLowerCase();
@@ -165,6 +166,7 @@
       }
     });
 
+    // Fase 2: senha "lamenthor"
     segundaSenhaInput.addEventListener("keydown", function (e) {
       if (e.key === "Enter") {
         const senha2 = segundaSenhaInput.value.trim().toLowerCase();
@@ -178,32 +180,35 @@
       }
     });
 
+    // Fase 3: Timer até as 17h fixo
     function iniciarTimer() {
       const agora = new Date();
-      const fim = new Date('2025-05-21T17:00:00');
+      const fim = new Date();
+      fim.setHours(17, 0, 0, 0); // 17h de hoje
 
-      const diferenca = Math.floor((fim - agora) / 1000);
-
-      if (diferenca <= 0) {
+      if (agora >= fim) {
         timerEl.textContent = "ACESSO LIBERADO";
         digitarPoema();
-      } else {
-        function atualizar() {
-          const agora = new Date();
-          const diferenca = Math.floor((fim - agora) / 1000);
-          if (diferenca <= 0) {
-            timerEl.textContent = "ACESSO LIBERADO";
-            digitarPoema();
-          } else {
-            const h = String(Math.floor(diferenca / 3600)).padStart(2, '0');
-            const m = String(Math.floor((diferenca % 3600) / 60)).padStart(2, '0');
-            const s = String(diferenca % 60).padStart(2, '0');
-            timerEl.textContent = `Tempo restante: ${h}:${m}:${s}`;
-            setTimeout(atualizar, 1000);
-          }
-        }
-        atualizar();
+        return;
       }
+
+      const segundosTotais = Math.floor((fim - agora) / 1000);
+
+      function atualizar() {
+        const diferenca = Math.floor((fim - new Date()) / 1000);
+        if (diferenca <= 0) {
+          timerEl.textContent = "ACESSO LIBERADO";
+          digitarPoema();
+        } else {
+          const h = String(Math.floor(diferenca / 3600)).padStart(2, '0');
+          const m = String(Math.floor((diferenca % 3600) / 60)).padStart(2, '0');
+          const s = String(diferenca % 60).padStart(2, '0');
+          timerEl.textContent = `Tempo restante: ${h}:${m}:${s}`;
+          setTimeout(atualizar, 1000);
+        }
+      }
+
+      atualizar();
     }
 
     function digitarPoema() {
@@ -220,6 +225,7 @@ Onde o frio guarda segredos e as tochas brilham no inverno.
       let i = 0;
       painel.textContent = "";
       painel.classList.add("digitando");
+
       function digitar() {
         if (i < poema.length) {
           painel.textContent += poema.charAt(i);
@@ -230,9 +236,11 @@ Onde o frio guarda segredos e as tochas brilham no inverno.
           senhaFinal.style.display = "flex";
         }
       }
+
       digitar();
     }
 
+    // Senha final
     finalInput.addEventListener("keydown", function(e) {
       if (e.key === "Enter") {
         const valor = finalInput.value.trim().toLowerCase();
@@ -252,6 +260,7 @@ Onde o frio guarda segredos e as tochas brilham no inverno.
       let i = 0;
       poemaFinal.textContent = "";
       poemaFinal.classList.add("digitando");
+
       function escrever() {
         if (i < texto.length) {
           poemaFinal.textContent += texto.charAt(i);
@@ -261,6 +270,7 @@ Onde o frio guarda segredos e as tochas brilham no inverno.
           poemaFinal.classList.remove("digitando");
         }
       }
+
       escrever();
     }
   </script>
