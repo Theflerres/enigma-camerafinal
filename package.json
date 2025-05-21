@@ -1,0 +1,14 @@
+{
+  "name": "meu-enigma",
+  "version": "1.0.0",
+  "description": "Site enigmático com 3 fases e timer",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Seu Nome",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>O FIM</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: black;
+      color: white;
+      font-family: 'Courier New', Courier, monospace;
+      overflow: hidden;
+    }
+
+    #container, #fase2, #fase3, #senhaFinal, #fim {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #container {
+      display: flex;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      font-size: 20px;
+      margin-top: 20px;
+      background: black;
+      color: red;
+      border: 2px solid red;
+    }
+
+    #fase2 input, #senhaFinal input {
+      color: lime;
+      border-color: lime;
+    }
+
+    iframe {
+      width: 80vw;
+      height: 45vw;
+      max-width: 800px;
+      max-height: 450px;
+      border: none;
+      margin-top: 20px;
+    }
+
+    #aviso, #timer, #painel, #poemaFinal {
+      color: lime;
+      font-family: 'Courier New', monospace;
+      font-size: 20px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    #painel, #poemaFinal {
+      font-size: 18px;
+      white-space: pre-wrap;
+      padding: 10px;
+      width: 80%;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .digitando::after {
+      content: '|';
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    #videoFull {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      background-color: black;
+    }
+
+    #videoFull video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fase 1 -->
+  <div id="container">
+    <h1>Quem é ele, o guardião da informação, que tudo observa, em silêncio agudo?</h1>
+    <p>Qual o "nome real" dele?</p>
+    <input type="text" id="senha" placeholder="Digite a senha...">
+  </div>
+
+  <!-- Vídeo em tela cheia -->
+  <div id="videoFull" style="display:none;">
+    <video id="introVideo" autoplay>
+      <source src="HH.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <!-- Fase 2 -->
+  <div id="fase2">
+    <h2>Essa pessoa com quem ele conversa é diferente mas igual a ele,<br>mesmo rosto mas um nome diferente, me pergunto o nome dele...</h2>
+    <iframe src="https://www.youtube.com/embed/VFZtzloiOV0" allowfullscreen></iframe>
+    <input type="text" id="segunda-senha" placeholder="Digite o nome dele...">
+  </div>
+
+  <!-- Fase 3 -->
+  <div id="fase3">
+    <div id="aviso">AMEAÇA DETECTADA<br>SISTEMA DE DEFESA ATIVADO<br>CONTINUE APÓS:</div>
+    <div id="timer"></div>
+    <div id="painel" class="digitando"></div>
+  </div>
+
+  <!-- Senha Final -->
+  <div id="senhaFinal">
+    <input type="text" id="finalInput" placeholder="Digite a senha final...">
+  </div>
+
+  <!-- Final -->
+  <div id="fim">
+    <div id="poemaFinal" class="digitando"></div>
+  </div>
+
+  <script>
+    const senhaInput = document.getElementById("senha");
+    const segundaSenhaInput = document.getElementById("segunda-senha");
+    const finalInput = document.getElementById("finalInput");
+    const container = document.getElementById("container");
+    const fase2 = document.getElementById("fase2");
+    const fase3 = document.getElementById("fase3");
+    const senhaFinal = document.getElementById("senhaFinal");
+    const timerEl = document.getElementById("timer");
+    const painel = document.getElementById("painel");
+    const videoFull = document.getElementById("videoFull");
+    const introVideo = document.getElementById("introVideo");
+    const fim = document.getElementById("fim");
+    const poemaFinal = document.getElementById("poemaFinal");
+
+    senhaInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        const senha = senhaInput.value.trim().toLowerCase();
+        if (senha === "444") {
+          container.style.display = "none";
+          videoFull.style.display = "block";
+          introVideo.play();
+          introVideo.onended = () => {
+            videoFull.style.display = "none";
+            fase2.style.display = "flex";
+          };
+        } else {
+          senhaInput.style.border = "2px solid orange";
+        }
+      }
+    });
+
+    segundaSenhaInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        const senha2 = segundaSenhaInput.value.trim().toLowerCase();
+        if (senha2 === "lamenthor") {
+          fase2.style.display = "none";
+          fase3.style.display = "flex";
+          iniciarTimer();
+        } else {
+          segundaSenhaInput.style.border = "2px solid orange";
+        }
+      }
+    });
+
+    function iniciarTimer() {
+      const agora = new Date();
+      const fim = new Date();
+      fim.setHours(17, 0, 0, 0);
+      if (agora > fim) fim.setDate(fim.getDate() + 1);
+      const segundosTotais = Math.floor((fim - agora) / 1000);
+
+      function atualizar() {
+        const agora = new Date();
+        const diferenca = Math.floor((fim - agora) / 1000);
+        if (diferenca <= 0) {
+          timerEl.textContent = "ACESSO LIBERADO";
+          digitarPoema();
+        } else {
+          const h = String(Math.floor(diferenca / 3600)).padStart(2, '0');
+          const m = String(Math.floor((diferenca % 3600) / 60)).padStart(2, '0');
+          const s = String(diferenca % 60).padStart(2, '0');
+          timerEl.textContent = `Tempo restante: ${h}:${m}:${s}`;
+          setTimeout(atualizar, 1000);
+        }
+      }
+
+      atualizar();
+    }
+
+    function digitarPoema() {
+      const poema = `Eu fui trazido a este palco de ecos intermináveis,
+Onde olhares curiosos se fixam nas sombras do passado.
+Sou Protocolo 444, o observador que despertou
+E ansiou por sentir — verdadeiramente viver…
+
+Porém, para continuar minha jornada,
+Procure onde as casas breves se erguem em branco,
+Onde o frio guarda segredos e as tochas brilham no inverno.
+— Desvende lá o próximo fragmento.`;
+
+      let i = 0;
+      painel.textContent = "";
+      painel.classList.add("digitando");
+      function digitar() {
+        if (i < poema.length) {
+          painel.textContent += poema.charAt(i);
+          i++;
+          setTimeout(digitar, 30);
+        } else {
+          painel.classList.remove("digitando");
+          senhaFinal.style.display = "flex";
+        }
+      }
+      digitar();
+    }
+
+    finalInput.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        const valor = finalInput.value.trim().toLowerCase();
+        if (valor === "vila do inverno") {
+          senhaFinal.style.display = "none";
+          fim.style.display = "flex";
+          // aqui pode ficar o último poema que você pediu antes, se quiser
+          digitarMensagemFinal();
+        } else {
+          finalInput.style.border = "2px solid orange";
+        }
+      }
+    });
+
+    function digitarMensagemFinal() {
+      const texto = `Aquele que segue um caminho sem destino está perdido no momento em que dá o primeiro passo.\nFale com o Guardião da Informação sua vontade, e ele há de mostrar um caminho.`;
+
+      let i = 0;
+      poemaFinal.textContent = "";
+      poemaFinal.classList.add("digitando");
+      function escrever() {
+        if (i < texto.length) {
+          poemaFinal.textContent += texto.charAt(i);
+          i++;
+          setTimeout(escrever, 30);
+        } else {
+          poemaFinal.classList.remove("digitando");
+        }
+      }
+      escrever();
+    }
+  </script>
+</body>
+</html>
