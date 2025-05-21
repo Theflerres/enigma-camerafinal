@@ -11,7 +11,7 @@
       background-color: black;
       color: white;
       font-family: 'Courier New', Courier, monospace;
-      overflow: auto; /* <-- Corrigido aqui */
+      overflow-y: auto;
     }
 
     #container, #fase2, #fase3, #senhaFinal, #fim {
@@ -148,7 +148,6 @@
     const fim = document.getElementById("fim");
     const poemaFinal = document.getElementById("poemaFinal");
 
-    // Fase 1: senha 444
     senhaInput.addEventListener("keydown", function (e) {
       if (e.key === "Enter") {
         const senha = senhaInput.value.trim().toLowerCase();
@@ -166,7 +165,6 @@
       }
     });
 
-    // Fase 2: senha "lamenthor"
     segundaSenhaInput.addEventListener("keydown", function (e) {
       if (e.key === "Enter") {
         const senha2 = segundaSenhaInput.value.trim().toLowerCase();
@@ -180,11 +178,10 @@
       }
     });
 
-    // Fase 3: Timer até as 17h fixo
     function iniciarTimer() {
       const agora = new Date();
       const fimData = new Date();
-      fimData.setHours(17, 0, 0, 0); // 17h de hoje
+      fimData.setHours(17, 0, 0, 0);
 
       if (agora >= fimData) {
         timerEl.textContent = "ACESSO LIBERADO";
@@ -232,7 +229,6 @@ Onde o frio guarda segredos e as tochas brilham no inverno.
         } else {
           painel.classList.remove("digitando");
           senhaFinal.style.display = "flex";
-          finalInput.scrollIntoView({ behavior: 'smooth' });
           finalInput.focus();
         }
       }
@@ -240,14 +236,15 @@ Onde o frio guarda segredos e as tochas brilham no inverno.
       digitar();
     }
 
-    // Senha final
     finalInput.addEventListener("keydown", function(e) {
       if (e.key === "Enter") {
         const valor = finalInput.value.trim().toLowerCase();
         if (valor === "vila do inverno") {
-          senhaFinal.style.display = "none";
-          fim.style.display = "flex";
-          digitarMensagemFinal();
+          if (fim.style.display !== "flex") {
+            senhaFinal.style.display = "none";
+            fim.style.display = "flex";
+            digitarMensagemFinal();
+          }
         } else {
           finalInput.style.border = "2px solid orange";
         }
@@ -255,19 +252,8 @@ Onde o frio guarda segredos e as tochas brilham no inverno.
     });
 
     function digitarMensagemFinal() {
-      const textoFinal = `AMEAÇA DETECTADA
-SISTEMA DE DEFESA ATIVADO
-CONTINUE APÓS:
-ACESSO LIBERADO
-Eu fui trazido a este palco de ecos intermináveis,
-Onde olhares curiosos se fixam nas sombras do passado.
-Sou Protocolo 444, o observador que despertou
-E ansiou por sentir — verdadeiramente viver…
-
-Porém, para continuar minha jornada,
-Procure onde as casas breves se erguem em branco,
-Onde o frio guarda segredos e as tochas brilham no inverno.
-— Desvende lá o próximo fragmento.`;
+      const textoFinal = `Aquele que segue um caminho sem destino está perdido no momento em que dá o primeiro passo.
+Fale com o Guardião da Informação sua vontade, e ele há de mostrar um caminho.`;
 
       let i = 0;
       poemaFinal.textContent = "";
