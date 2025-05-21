@@ -104,7 +104,7 @@
 
   <!-- Vídeo em tela cheia -->
   <div id="videoFull" style="display:none;">
-    <video id="introVideo" autoplay>
+    <video id="introVideo">
       <source src="HH.mp4" type="video/mp4">
     </video>
   </div>
@@ -180,27 +180,30 @@
 
     function iniciarTimer() {
       const agora = new Date();
-      const fim = new Date();
-      fim.setHours(17, 0, 0, 0);
-      if (agora > fim) fim.setDate(fim.getDate() + 1);
-      const segundosTotais = Math.floor((fim - agora) / 1000);
+      const fim = new Date('2025-05-21T17:00:00');
 
-      function atualizar() {
-        const agora = new Date();
-        const diferenca = Math.floor((fim - agora) / 1000);
-        if (diferenca <= 0) {
-          timerEl.textContent = "ACESSO LIBERADO";
-          digitarPoema();
-        } else {
-          const h = String(Math.floor(diferenca / 3600)).padStart(2, '0');
-          const m = String(Math.floor((diferenca % 3600) / 60)).padStart(2, '0');
-          const s = String(diferenca % 60).padStart(2, '0');
-          timerEl.textContent = `Tempo restante: ${h}:${m}:${s}`;
-          setTimeout(atualizar, 1000);
+      const diferenca = Math.floor((fim - agora) / 1000);
+
+      if (diferenca <= 0) {
+        timerEl.textContent = "ACESSO LIBERADO";
+        digitarPoema();
+      } else {
+        function atualizar() {
+          const agora = new Date();
+          const diferenca = Math.floor((fim - agora) / 1000);
+          if (diferenca <= 0) {
+            timerEl.textContent = "ACESSO LIBERADO";
+            digitarPoema();
+          } else {
+            const h = String(Math.floor(diferenca / 3600)).padStart(2, '0');
+            const m = String(Math.floor((diferenca % 3600) / 60)).padStart(2, '0');
+            const s = String(diferenca % 60).padStart(2, '0');
+            timerEl.textContent = `Tempo restante: ${h}:${m}:${s}`;
+            setTimeout(atualizar, 1000);
+          }
         }
+        atualizar();
       }
-
-      atualizar();
     }
 
     function digitarPoema() {
@@ -236,7 +239,6 @@ Onde o frio guarda segredos e as tochas brilham no inverno.
         if (valor === "vila do inverno") {
           senhaFinal.style.display = "none";
           fim.style.display = "flex";
-          // aqui pode ficar o último poema que você pediu antes, se quiser
           digitarMensagemFinal();
         } else {
           finalInput.style.border = "2px solid orange";
