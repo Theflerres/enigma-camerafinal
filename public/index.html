@@ -12,9 +12,10 @@
       color: white;
       font-family: 'Courier New', Courier, monospace;
       overflow-y: auto;
+      overflow-x: hidden; /* Prevenir scroll horizontal com overlays */
     }
 
-    #container, #fase2, #fase3, #senhaFinal, #fim {
+    #container, #fase2, #fase3, #senhaFinal, #fim, .fullscreen-sequence { /* Adicionado .fullscreen-sequence */
       display: none;
       flex-direction: column;
       justify-content: center;
@@ -22,28 +23,38 @@
       min-height: 100vh;
       text-align: center;
       padding: 20px;
+      box-sizing: border-box; /* Para que padding não aumente o tamanho total */
     }
 
     #container {
       display: flex;
     }
 
-    input[type="text"], input[type="password"] { /* Estilo geral para inputs */
+    input[type="text"], input[type="password"] { 
       padding: 10px;
       font-size: 20px;
-      margin-top: 10px; /* Ajustado para login */
+      margin-top: 10px; 
       background: black;
-      color: red; /* Cor padrão para inputs */
-      border: 2px solid red; /* Borda padrão para inputs */
+      color: red; 
+      border: 2px solid red; 
       font-family: 'Courier New', Courier, monospace;
+      box-sizing: border-box;
     }
 
-    #fase2 input, #senhaFinal input, #loginSection input { /* Inputs específicos com cor lime */
+    #fase2 input, #senhaFinal input, #loginSection input, 
+    #convidadoNomeInput, /* Estilo para novo input */
+    .fake-login-input /* Estilo para inputs do login falso */
+    { 
       color: lime;
       border-color: lime;
     }
     #loginSection input {
         margin-bottom: 15px;
+    }
+    #convidadoNomeInput, .fake-login-input {
+        margin-bottom: 15px;
+        width: 80%;
+        max-width: 300px;
     }
 
 
@@ -119,7 +130,7 @@
       align-items: center;
     }
 
-    #submitLoginButton {
+    #submitLoginButton, #repeatAudioButton, .fake-submit-button { /* Adicionado .fake-submit-button */
       padding: 10px 20px;
       background-color: lime;
       color: black;
@@ -129,8 +140,53 @@
       cursor: pointer;
       margin-top: 10px;
     }
-    #submitLoginButton:hover {
-        background-color: #00e600; /* Um pouco mais claro no hover */
+    #submitLoginButton:hover, #repeatAudioButton:hover, .fake-submit-button:hover { 
+        background-color: #00e600; 
+    }
+    #repeatAudioButton {
+        margin-top: 20px; 
+    }
+    
+    /* Estilos para a sequência CameraMan */
+    .fullscreen-sequence {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: black;
+        z-index: 1000; /* Acima do conteúdo normal */
+    }
+    .fullscreen-sequence img {
+        max-width: 80%;
+        max-height: 60vh;
+        margin-bottom: 20px;
+        border: 2px solid lime;
+    }
+     .fullscreen-sequence h1.typing-effect { /* Para "Acessando biblioteca..." */
+        font-size: 2.5em; /* Ajuste conforme necessário */
+        color: lime;
+        padding: 20px;
+     }
+
+    #unauthorizedOverlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0,0,0,0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 100000; /* Acima de tudo */
+        text-align: center;
+    }
+    #unauthorizedOverlay h1 {
+        color: red;
+        font-size: 3em; /* Bem grande */
+        padding: 20px;
+        text-shadow: 2px 2px 4px black;
     }
 
   </style>
@@ -174,7 +230,9 @@
         <input type="password" id="passwordInput" placeholder="Senha...">
         <button id="submitLoginButton">Entrar</button>
     </div>
-    <audio id="finalAudio" src="Bem-vindo.wav" preload="auto"></audio> </div>
+    <audio id="finalAudio" src="bemvindo.wav" preload="auto"></audio>
+    <button id="repeatAudioButton" style="display: none;">Repetir Áudio</button> 
+  </div>
 
   <script>
     const senhaInput = document.getElementById("senha");
@@ -191,19 +249,203 @@
     const fimDiv = document.getElementById("fim");
     const poemaFinal = document.getElementById("poemaFinal");
     const avisoEl = document.getElementById("aviso");
+    const hiddenMessageEl = document.getElementById("hiddenMessage"); 
 
-    // Elementos da seção de login e áudio
     const loginSection = document.getElementById("loginSection");
     const loginInput = document.getElementById("loginInput");
     const passwordInput = document.getElementById("passwordInput");
     const submitLoginButton = document.getElementById("submitLoginButton");
     const finalAudio = document.getElementById("finalAudio");
+    const repeatAudioButton = document.getElementById("repeatAudioButton"); 
+
+
+    // --- INÍCIO FUNÇÕES SEQUÊNCIA CAMERAMAN ---
+
+    function typeWriterEffect(element, text, callback, speed = 100) {
+        let i = 0;
+        element.innerHTML = ""; // Limpa o elemento
+        element.classList.add("digitando"); 
+        function type() {
+            if (i < text.length) {
+                element.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(type, speed);
+            } else {
+                element.classList.remove("digitando");
+                if (callback) setTimeout(callback, 500); // Pequeno delay antes do callback
+            }
+        }
+        type();
+    }
+
+    function triggerShutdownSequence() {
+        // Remove outras sequências fullscreen se existirem
+        const existingCameraManSeq = document.getElementById("cameraManSequenceDiv");
+        if (existingCameraManSeq) existingCameraManSeq.remove();
+        const existingFcnAccess = document.getElementById("fcnAccessScreenDiv");
+        if (existingFcnAccess) existingFcnAccess.remove();
+
+
+        let overlay = document.getElementById('unauthorizedOverlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'unauthorizedOverlay';
+            document.body.appendChild(overlay); // Estilos já definidos no CSS
+        }
+        overlay.style.display = 'flex';
+        
+        const unauthorizedMessage = document.createElement('h1');
+        unauthorizedMessage.textContent = "ACESSO NÃO AUTORIZADO DETECTADO";
+        overlay.innerHTML = ''; 
+        overlay.appendChild(unauthorizedMessage);
+        
+        setTimeout(() => {
+            // Tenta fechar a janela/aba. Pode não funcionar em todos os cenários.
+            unauthorizedMessage.innerHTML += "<br><br>INICIANDO PROTOCOLO DE ENCERRAMENTO...";
+            setTimeout(() => {
+                window.open('', '_self', ''); // Necessário em alguns navegadores para permitir o close
+                window.close();
+                // Fallback se window.close() falhar:
+                if (!document.hidden) { // Se a aba ainda estiver visível
+                    unauthorizedMessage.innerHTML += "<br><br>FALHA NO ENCERRAMENTO AUTOMÁTICO.<br>POR FAVOR, FECHE ESTA ABA MANUALMENTE.";
+                }
+            }, 2000);
+        }, 2000); 
+    }
+
+    function showFakeLogin(parentElement) {
+        parentElement.innerHTML = ''; // Limpa o texto "Acessando..."
+
+        const fakeLoginPrompt = document.createElement('p');
+        fakeLoginPrompt.textContent = "Autenticação da Biblioteca FCN Requerida:";
+        fakeLoginPrompt.style.color = "lime";
+        fakeLoginPrompt.style.fontSize = "1.5em";
+        fakeLoginPrompt.style.marginBottom = "20px";
+        parentElement.appendChild(fakeLoginPrompt);
+
+        const fakeLoginInputEl = document.createElement('input');
+        fakeLoginInputEl.type = 'text';
+        fakeLoginInputEl.placeholder = 'ID de Agente FCN...';
+        fakeLoginInputEl.className = 'fake-login-input'; // Para estilo CSS
+        parentElement.appendChild(fakeLoginInputEl);
+
+        const fakePasswordInputEl = document.createElement('input');
+        fakePasswordInputEl.type = 'password';
+        fakePasswordInputEl.placeholder = 'Senha de Acesso FCN...';
+        fakePasswordInputEl.className = 'fake-login-input'; // Para estilo CSS
+        parentElement.appendChild(fakePasswordInputEl);
+        
+        const fakeSubmitButtonEl = document.createElement('button');
+        fakeSubmitButtonEl.textContent = 'Verificar Credenciais';
+        fakeSubmitButtonEl.className = 'fake-submit-button'; // Para estilo CSS
+        parentElement.appendChild(fakeSubmitButtonEl);
+
+        fakeLoginInputEl.focus();
+
+        function onFakeSubmitAttempt() {
+            // Independente da resposta, aciona o shutdown
+            triggerShutdownSequence();
+        }
+
+        fakeSubmitButtonEl.addEventListener('click', onFakeSubmitAttempt);
+        fakePasswordInputEl.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                onFakeSubmitAttempt();
+            }
+        });
+         fakeLoginInputEl.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                fakePasswordInputEl.focus();
+            }
+        });
+    }
+
+    function showFcnAccessScreen() {
+        const existingCameraManSeq = document.getElementById("cameraManSequenceDiv");
+        if (existingCameraManSeq) existingCameraManSeq.remove();
+
+        let fcnScreen = document.getElementById('fcnAccessScreenDiv');
+        if (!fcnScreen) {
+            fcnScreen = document.createElement('div');
+            fcnScreen.id = 'fcnAccessScreenDiv';
+            fcnScreen.className = 'fullscreen-sequence'; // Aplica estilo CSS
+            document.body.appendChild(fcnScreen);
+        }
+        fcnScreen.innerHTML = ''; 
+        fcnScreen.style.display = 'flex';
+        
+        const typingTextElement = document.createElement('h1');
+        typingTextElement.className = 'typing-effect'; // Para estilo CSS
+        fcnScreen.appendChild(typingTextElement);
+        
+        typeWriterEffect(typingTextElement, "Acessando biblioteca do FCN....", () => {
+            showFakeLogin(fcnScreen);
+        }, 120); // Velocidade de digitação
+    }
+
+
+    function handleCameraManPath() {
+        container.style.display = 'none'; // Esconde o container original do enigma 1
+        // Oculta outras fases principais se estiverem visíveis
+        fase2.style.display = 'none';
+        fase3.style.display = 'none';
+        senhaFinal.style.display = 'none';
+        fimDiv.style.display = 'none';
+
+
+        let cameraManSeqDiv = document.getElementById("cameraManSequenceDiv");
+        if (!cameraManSeqDiv) {
+            cameraManSeqDiv = document.createElement("div");
+            cameraManSeqDiv.id = "cameraManSequenceDiv";
+            cameraManSeqDiv.className = "fullscreen-sequence"; // Aplica estilo CSS
+            document.body.appendChild(cameraManSeqDiv);
+        }
+        cameraManSeqDiv.innerHTML = ''; // Limpa conteúdo anterior
+        cameraManSeqDiv.style.display = 'flex';
+
+
+        const img = document.createElement('img');
+        img.src = 'peluche.png'; // CERTIFIQUE-SE QUE ESTA IMAGEM EXISTE NA PASTA
+        img.alt = 'Peluche Secreto';
+        // Estilos para imagem já no CSS via .fullscreen-sequence img
+        cameraManSeqDiv.appendChild(img);
+        
+        const pConvidado = document.createElement('p');
+        pConvidado.textContent = 'Um convidado inesperado... Qual o nome dele?';
+        pConvidado.style.color = "lime";
+        pConvidado.style.fontSize = "1.5em";
+        cameraManSeqDiv.appendChild(pConvidado);
+
+        const convidadoInput = document.createElement('input');
+        convidadoInput.type = 'text';
+        convidadoInput.id = 'convidadoNomeInput'; // Para estilo CSS
+        convidadoInput.placeholder = 'Nome do convidado...';
+        cameraManSeqDiv.appendChild(convidadoInput);
+        convidadoInput.focus();
+
+        convidadoInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const nomeConvidado = convidadoInput.value.trim();
+                if (nomeConvidado) { // Qualquer nome serve
+                    showFcnAccessScreen();
+                } else {
+                    convidadoInput.style.borderColor = "orange"; // Feedback se vazio
+                }
+            }
+        });
+    }
+
+    // --- FIM FUNÇÕES SEQUÊNCIA CAMERAMAN ---
 
 
     senhaInput.addEventListener("keydown", function (e) {
       if (e.key === "Enter") {
-        const senhaUsuario = senhaInput.value.trim().toLowerCase();
-        if (senhaUsuario === "444") {
+        const senhaUsuario = senhaInput.value.trim(); // Não converter para lowercase aqui ainda
+        const senhaLower = senhaUsuario.toLowerCase();
+
+        if (senhaLower === "cameraman") { // Checa por "cameraman" em minúsculas
+            handleCameraManPath(); // Inicia a sequência secreta
+        } else if (senhaUsuario === "444") { // Senha original do enigma
           container.style.display = "none";
           videoFull.style.display = "block";
           introVideo.play().catch(error => console.error("Erro ao tentar tocar o vídeo:", error));
@@ -217,6 +459,8 @@
       }
     });
 
+    // ... (Restante do seu código JavaScript existente para as outras fases) ...
+    // Cole o restante do seu código JS aqui (iniciarAnimacaoAvisoParte1, segundaSenhaInput listener, etc.)
     function iniciarAnimacaoAvisoParte1(callback) {
       const mensagens = [
         "localização desconhecida detectada",
@@ -295,7 +539,7 @@
     }
 
     function digitarPoema() {
-      const poema = `Eu fui trazido a este palco de ecos intermináveis,
+      const poemaText = `Eu fui trazido a este palco de ecos intermináveis,
 Onde olhares curiosos se fixam nas sombras do passado.
 Sou Protocolo 444, o observador que despertou
 E ansiou por sentir — verdadeiramente viver…
@@ -308,8 +552,8 @@ Onde o frio guarda segredos e as tochas brilham no inverno.
       painel.innerHTML = "";
       painel.classList.add("digitando");
       function digitar() {
-        if (i < poema.length) {
-          painel.innerHTML += poema.charAt(i);
+        if (i < poemaText.length) {
+          painel.innerHTML += poemaText.charAt(i);
           i++;
           setTimeout(digitar, 30);
         } else {
@@ -351,63 +595,64 @@ Onde o frio guarda segredos e as tochas brilham no inverno.
           setTimeout(digitar, 30);
         } else {
           poemaFinal.classList.remove("digitando");
-          // Após terminar de digitar o texto cifrado, mostra a seção de login
-          loginSection.style.display = "flex"; // Usa flex para centralizar os inputs verticalmente
-          loginInput.focus(); // Foca no campo de login
+          loginSection.style.display = "flex"; 
+          loginInput.focus(); 
         }
       }
       digitar();
     }
 
-    // Função para verificar o login
     function verificarLogin() {
         const loginValor = loginInput.value.trim();
-        const senhaValor = passwordInput.value.trim(); // Mantém a capitalização para "Delta"
+        const senhaValor = passwordInput.value.trim(); 
 
         if (loginValor === "444" && senhaValor === "Delta") {
-            // Login correto
             loginInput.style.borderColor = "lime";
             passwordInput.style.borderColor = "lime";
             
-            // Esconde a seção de login e o poema/texto cifrado
             loginSection.style.display = "none";
-            poemaFinal.style.display = "none"; // Opcional: esconde o texto cifrado
-            document.getElementById("hiddenMessage").style.display = "none"; // Opcional: esconde a mensagem do drive
+            poemaFinal.style.display = "none"; 
+            hiddenMessageEl.style.display = "none"; 
 
-            // Toca o áudio
-            finalAudio.play().catch(error => {
+            finalAudio.play().then(() => {
+                 repeatAudioButton.style.display = "inline-block"; 
+            }).catch(error => {
                 console.error("Erro ao tentar tocar o áudio:", error);
-                alert("Erro ao carregar o áudio. Verifique o console para detalhes.");
+                alert("Erro ao carregar o áudio. Verifique o console para detalhes e se o arquivo 'bemvindo.wav' está na pasta correta.");
             });
 
-            // Opcional: o que fazer quando o áudio terminar
             finalAudio.onended = () => {
                 console.log("Áudio terminou.");
-                // Aqui você pode adicionar o próximo passo do enigma, se houver.
-                // Por exemplo, mostrar uma nova mensagem ou elemento.
-                // fimDiv.innerHTML = "<h1>FIM?</h1>"; // Exemplo
             };
 
         } else {
-            // Login incorreto
             loginInput.style.borderColor = "orange";
             passwordInput.style.borderColor = "orange";
-            loginInput.value = ""; // Limpa os campos
+            loginInput.value = ""; 
             passwordInput.value = "";
             loginInput.focus();
         }
     }
 
     submitLoginButton.addEventListener("click", verificarLogin);
+    
     passwordInput.addEventListener("keydown", function(e) {
         if (e.key === "Enter") {
             verificarLogin();
         }
     });
-    loginInput.addEventListener("keydown", function(e) { // Permite Enter no campo de login também
+    loginInput.addEventListener("keydown", function(e) { 
         if (e.key === "Enter") {
-            passwordInput.focus(); // Move o foco para o campo de senha
+            passwordInput.focus(); 
         }
+    });
+
+    repeatAudioButton.addEventListener("click", function() {
+        finalAudio.currentTime = 0; 
+        finalAudio.play().catch(error => {
+            console.error("Erro ao tentar repetir o áudio:", error);
+            alert("Erro ao tentar repetir o áudio.");
+        });
     });
 
   </script>
