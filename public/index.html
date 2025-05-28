@@ -28,19 +28,24 @@
       display: flex;
     }
 
-    input[type="text"] {
+    input[type="text"], input[type="password"] { /* Estilo geral para inputs */
       padding: 10px;
       font-size: 20px;
-      margin-top: 20px;
+      margin-top: 10px; /* Ajustado para login */
       background: black;
-      color: red;
-      border: 2px solid red;
+      color: red; /* Cor padrão para inputs */
+      border: 2px solid red; /* Borda padrão para inputs */
+      font-family: 'Courier New', Courier, monospace;
     }
 
-    #fase2 input, #senhaFinal input {
+    #fase2 input, #senhaFinal input, #loginSection input { /* Inputs específicos com cor lime */
       color: lime;
       border-color: lime;
     }
+    #loginSection input {
+        margin-bottom: 15px;
+    }
+
 
     iframe {
       width: 80vw;
@@ -66,6 +71,7 @@
       width: 80%;
       max-width: 800px;
       margin: 0 auto;
+      word-break: break-all;
     }
 
     .digitando::after {
@@ -91,6 +97,42 @@
       height: 100%;
       object-fit: cover;
     }
+
+    #fim {
+      position: relative;
+    }
+
+    #hiddenMessage {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      font-size: 10px;
+      color: #0A0A0A;
+      z-index: 1;
+      text-align: right;
+    }
+
+    #loginSection {
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #submitLoginButton {
+      padding: 10px 20px;
+      background-color: lime;
+      color: black;
+      border: none;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 18px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    #submitLoginButton:hover {
+        background-color: #00e600; /* Um pouco mais claro no hover */
+    }
+
   </style>
 </head>
 <body>
@@ -114,8 +156,9 @@
   </div>
 
   <div id="fase3">
-    <div id="aviso"></div> <div id="timer"></div>
-    <div id="painel" class="digitando"></div>
+    <div id="aviso"></div>
+    <div id="timer"></div>
+    <div id="painel"></div>
   </div>
 
   <div id="senhaFinal">
@@ -124,7 +167,14 @@
 
   <div id="fim">
     <div id="poemaFinal" class="digitando"></div>
-  </div>
+    <div id="hiddenMessage">Por favor, utilize o drive para descriptografar</div>
+    
+    <div id="loginSection" style="display: none;">
+        <input type="text" id="loginInput" placeholder="Login...">
+        <input type="password" id="passwordInput" placeholder="Senha...">
+        <button id="submitLoginButton">Entrar</button>
+    </div>
+    <audio id="finalAudio" src="Bem-vindo.wav" preload="auto"></audio> </div>
 
   <script>
     const senhaInput = document.getElementById("senha");
@@ -138,17 +188,25 @@
     const painel = document.getElementById("painel");
     const videoFull = document.getElementById("videoFull");
     const introVideo = document.getElementById("introVideo");
-    const fim = document.getElementById("fim");
+    const fimDiv = document.getElementById("fim");
     const poemaFinal = document.getElementById("poemaFinal");
-    const avisoEl = document.getElementById("aviso"); // Elemento aviso
+    const avisoEl = document.getElementById("aviso");
+
+    // Elementos da seção de login e áudio
+    const loginSection = document.getElementById("loginSection");
+    const loginInput = document.getElementById("loginInput");
+    const passwordInput = document.getElementById("passwordInput");
+    const submitLoginButton = document.getElementById("submitLoginButton");
+    const finalAudio = document.getElementById("finalAudio");
+
 
     senhaInput.addEventListener("keydown", function (e) {
       if (e.key === "Enter") {
-        const senha = senhaInput.value.trim().toLowerCase();
-        if (senha === "444") {
+        const senhaUsuario = senhaInput.value.trim().toLowerCase();
+        if (senhaUsuario === "444") {
           container.style.display = "none";
           videoFull.style.display = "block";
-          introVideo.play().catch(error => console.error("Erro ao tentar tocar o vídeo:", error)); // Adicionado .catch para debug de vídeo
+          introVideo.play().catch(error => console.error("Erro ao tentar tocar o vídeo:", error));
           introVideo.onended = () => {
             videoFull.style.display = "none";
             fase2.style.display = "flex";
@@ -159,42 +217,36 @@
       }
     });
 
-    // FUNÇÃO PARA A ANIMAÇÃO DO "AVISO"
-    function iniciarAnimacaoAviso() {
+    function iniciarAnimacaoAvisoParte1(callback) {
       const mensagens = [
         "localização desconhecida detectada",
         "iniciando varredura...",
-        " ", // Linha vazia para espaçamento
+        " ",
         "Tentativa de Rastreamento 1: 203.0.113.42",
         "Tentativa de Rastreamento 2: 198.51.100.9",
         "Tentativa de Rastreamento 3: 8.8.4.4",
-        "Tentativa de Rastreamento 4: 172.16.33.78",
-        " ", // Linha vazia para espaçamento
-        "Múltiplos proxies e re-roteamentos identificados.",
-        "SISTEMA DE DEFESA ATIVADO.",
-        "CONTINUE APÓS:"
+        "Tentativa de Rastreamento 4: 172.16.33.78"
       ];
       let linhaAtual = 0;
       let charAtual = 0;
-      
-      avisoEl.innerHTML = ""; // Limpa conteúdo anterior
-      avisoEl.classList.add("digitando"); // Adiciona classe para cursor piscando
-
+      avisoEl.innerHTML = "";
+      avisoEl.classList.add("digitando");
       function typeWriter() {
         if (linhaAtual < mensagens.length) {
           const textoLinha = mensagens[linhaAtual];
           if (charAtual < textoLinha.length) {
             avisoEl.innerHTML += textoLinha.charAt(charAtual);
             charAtual++;
-            setTimeout(typeWriter, 40); // Velocidade de digitação dos caracteres
+            setTimeout(typeWriter, 40);
           } else {
             avisoEl.innerHTML += "<br>";
             linhaAtual++;
             charAtual = 0;
-            setTimeout(typeWriter, 150); // Delay antes de iniciar a próxima linha
+            setTimeout(typeWriter, 150);
           }
         } else {
-          avisoEl.classList.remove("digitando"); // Remove classe ao final da animação
+          avisoEl.classList.remove("digitando");
+          if (callback) callback();
         }
       }
       typeWriter();
@@ -206,48 +258,40 @@
         if (senha2 === "lamenthor") {
           fase2.style.display = "none";
           fase3.style.display = "flex";
-          iniciarAnimacaoAviso(); // CHAMA A NOVA FUNÇÃO DE ANIMAÇÃO
-          iniciarTimer(); 
+          iniciarAnimacaoAvisoParte1(() => {
+            iniciarFakeTimer(() => {
+              digitarPoema();
+            });
+          });
         } else {
           segundaSenhaInput.style.border = "2px solid orange";
         }
       }
     });
 
-    function iniciarTimer() {
-      const agora = new Date();
-      const fimData = new Date();
-      // Definir o horário de término para hoje às 17:00
-      // Se você quiser que o timer conte a partir de um ponto futuro fixo, ajuste aqui.
-      // Para teste, você pode querer um tempo menor, ex: fimData.setMinutes(agora.getMinutes() + 1);
-      fimData.setHours(17, 0, 0, 0); 
-
-
-      if (agora >= fimData) {
-        timerEl.textContent = "ACESSO LIBERADO";
-        if (fase3.style.display === "flex") { // Garante que o poema só apareça se a fase 3 estiver ativa
-             digitarPoema();
-        }
-        return;
-      }
-
-      function atualizar() {
-        const agoraAtualizado = new Date();
-        const diferenca = Math.floor((fimData - agoraAtualizado) / 1000);
-        if (diferenca <= 0) {
+    function iniciarFakeTimer(callbackOnComplete) {
+      timerEl.textContent = "Analisando protocolos...";
+      let totalFakeSeconds = 24 * 60 * 60;
+      const durationMs = 10000;
+      const intervalMs = 50;
+      const totalUpdates = durationMs / intervalMs;
+      const decrementPerUpdate = totalFakeSeconds / totalUpdates;
+      let currentFakeSeconds = totalFakeSeconds;
+      function updateFakeTimer() {
+        currentFakeSeconds -= decrementPerUpdate;
+        if (currentFakeSeconds < 0) currentFakeSeconds = 0;
+        const h = String(Math.floor(currentFakeSeconds / 3600)).padStart(2, '0');
+        const m = String(Math.floor((currentFakeSeconds % 3600) / 60)).padStart(2, '0');
+        const s = String(Math.floor(currentFakeSeconds % 60)).padStart(2, '0');
+        timerEl.textContent = `Tempo restante: ${h}:${m}:${s}`;
+        if (currentFakeSeconds <= 0) {
           timerEl.textContent = "ACESSO LIBERADO";
-          if (fase3.style.display === "flex") { // Garante que o poema só apareça se a fase 3 estiver ativa
-             digitarPoema();
-          }
+          if (callbackOnComplete) setTimeout(callbackOnComplete, 500);
         } else {
-          const h = String(Math.floor(diferenca / 3600)).padStart(2, '0');
-          const m = String(Math.floor((diferenca % 3600) / 60)).padStart(2, '0');
-          const s = String(diferenca % 60).padStart(2, '0');
-          timerEl.textContent = `Tempo restante: ${h}:${m}:${s}`;
-          setTimeout(atualizar, 1000);
+          setTimeout(updateFakeTimer, intervalMs);
         }
       }
-      atualizar();
+      setTimeout(updateFakeTimer, 500);
     }
 
     function digitarPoema() {
@@ -260,14 +304,12 @@ Porém, para continuar minha jornada,
 Procure onde as casas breves se erguem em branco,
 Onde o frio guarda segredos e as tochas brilham no inverno.
 — Desvende lá o próximo fragmento.`;
-
       let i = 0;
-      painel.textContent = ""; // Limpa o painel antes de digitar
+      painel.innerHTML = "";
       painel.classList.add("digitando");
-
       function digitar() {
         if (i < poema.length) {
-          painel.textContent += poema.charAt(i);
+          painel.innerHTML += poema.charAt(i);
           i++;
           setTimeout(digitar, 30);
         } else {
@@ -276,20 +318,17 @@ Onde o frio guarda segredos e as tochas brilham no inverno.
           finalInput.focus();
         }
       }
-      // Só inicia a digitação do poema se o timer realmente liberou o acesso
-      if (timerEl.textContent === "ACESSO LIBERADO") {
-          digitar();
-      }
+      digitar();
     }
 
     finalInput.addEventListener("keydown", function(e) {
       if (e.key === "Enter") {
         const valor = finalInput.value.trim().toLowerCase();
         if (valor === "vila do inverno") {
-          if (fim.style.display !== "flex") {
+          if (fimDiv.style.display !== "flex") {
             senhaFinal.style.display = "none";
-            fase3.style.display = "none"; // Esconde a fase 3 também
-            fim.style.display = "flex";
+            fase3.style.display = "none";
+            fimDiv.style.display = "flex";
             digitarMensagemFinal();
           }
         } else {
@@ -299,24 +338,78 @@ Onde o frio guarda segredos e as tochas brilham no inverno.
     });
 
     function digitarMensagemFinal() {
-      const textoFinal = `Aquele que segue um caminho sem destino está perdido no momento em que dá o primeiro passo.
-Fale com o Guardião da Informação sua vontade, e ele há de mostrar um caminho.`;
-
+      const textoCifrado = `Rg54uvdP#hhvy$mX]@-03EeC034@TNrwkvoqjt6scsywecxp5prdpsevtlm+34@X7rdnxsvexHU[4@-0DX2m+34@XAvdn1fue3ssxw4xnwexsovdz4hrwk9uhdym+34@X3rdoxsfey@ap;eC034@TCrhtyifeo7,csn$lws'socenxsvskm+34@X9cvp@tum47 X]@=048eC034@TAct21mhm2t fll%e"de5 qY/-03JL5eusk!esi41dr;eC034@TU[4@-0DT27trgz4ovdl6tlkz@,cin7apdy7 yY/-03I_$,X]@-03Ed!U[4@-EDwkwU[4@-EGkt#ovd2xsvsl5 X]@=048k%U[4@-EDqkwocgeC034P.u:Y/-034Lmmcztzidd3xmcrz5e>dx7lgeo7 ss2souhp5,X]@-03Eb7msiywocgz!rhr4xs>d4!aX]@-0H@l6drdy7vddxtrjixIU[4@-0DY/-034LXnwvpscdqlwavdo7 yY/-03I#vurdp@thpl!,X]@-03ESm+34@X1cyxssX]@-0HHxuooskxstypvigs'spusy#ocekwevtp!tdvAm+34@-AIs25acx21aqk54au:k@eqxtwocixsslpeC034PTnfmzHU[4@-0DPp#rdd1$eck51acs3sqxik!optp5 rdnxnwvzIU[4@-0DY/-034Lgcxp5@ HxsxrqyxsU[4$-17d31swixt gi38euxzHU[4@-0DEkxnwvlwacwpsofyw#acek7lks3saei2#ov;eC034@TMdwk9uhqkwefmq!a>dn7mcpeC034Q+glglsecgl4md:eC034@TCrrpvtd{3x dsk6U[4@-FDgwxo>dpsafi3@acektlpe`;
+      
       let i = 0;
       poemaFinal.textContent = "";
       poemaFinal.classList.add("digitando");
 
       function digitar() {
-        if (i < textoFinal.length) {
-          poemaFinal.textContent += textoFinal.charAt(i);
+        if (i < textoCifrado.length) {
+          poemaFinal.textContent += textoCifrado.charAt(i);
           i++;
           setTimeout(digitar, 30);
         } else {
           poemaFinal.classList.remove("digitando");
+          // Após terminar de digitar o texto cifrado, mostra a seção de login
+          loginSection.style.display = "flex"; // Usa flex para centralizar os inputs verticalmente
+          loginInput.focus(); // Foca no campo de login
         }
       }
       digitar();
     }
+
+    // Função para verificar o login
+    function verificarLogin() {
+        const loginValor = loginInput.value.trim();
+        const senhaValor = passwordInput.value.trim(); // Mantém a capitalização para "Delta"
+
+        if (loginValor === "444" && senhaValor === "Delta") {
+            // Login correto
+            loginInput.style.borderColor = "lime";
+            passwordInput.style.borderColor = "lime";
+            
+            // Esconde a seção de login e o poema/texto cifrado
+            loginSection.style.display = "none";
+            poemaFinal.style.display = "none"; // Opcional: esconde o texto cifrado
+            document.getElementById("hiddenMessage").style.display = "none"; // Opcional: esconde a mensagem do drive
+
+            // Toca o áudio
+            finalAudio.play().catch(error => {
+                console.error("Erro ao tentar tocar o áudio:", error);
+                alert("Erro ao carregar o áudio. Verifique o console para detalhes.");
+            });
+
+            // Opcional: o que fazer quando o áudio terminar
+            finalAudio.onended = () => {
+                console.log("Áudio terminou.");
+                // Aqui você pode adicionar o próximo passo do enigma, se houver.
+                // Por exemplo, mostrar uma nova mensagem ou elemento.
+                // fimDiv.innerHTML = "<h1>FIM?</h1>"; // Exemplo
+            };
+
+        } else {
+            // Login incorreto
+            loginInput.style.borderColor = "orange";
+            passwordInput.style.borderColor = "orange";
+            loginInput.value = ""; // Limpa os campos
+            passwordInput.value = "";
+            loginInput.focus();
+        }
+    }
+
+    submitLoginButton.addEventListener("click", verificarLogin);
+    passwordInput.addEventListener("keydown", function(e) {
+        if (e.key === "Enter") {
+            verificarLogin();
+        }
+    });
+    loginInput.addEventListener("keydown", function(e) { // Permite Enter no campo de login também
+        if (e.key === "Enter") {
+            passwordInput.focus(); // Move o foco para o campo de senha
+        }
+    });
+
   </script>
 </body>
 </html>
