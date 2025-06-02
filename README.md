@@ -1,3 +1,3 @@
 # Meu Enigma
 
-Site com 3 fases de enigma, incluindo vídeo, timer e animação de digitação.
+Um site com uma sequencia de Enigmas relacionados a um persongame em uma historia escrita por mim.
