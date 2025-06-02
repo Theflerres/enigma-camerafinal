@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>O FIM</title>
-  <style>
+  <title>O FIM... É APENAS O COMEÇO</title> <style>
     body {
       margin: 0;
       padding: 0;
@@ -15,7 +14,13 @@
       overflow-x: hidden; /* Prevenir scroll horizontal com overlays */
     }
 
-    #container, #fase2, #fase3, #senhaFinal, #fim, .fullscreen-sequence { /* Adicionado .fullscreen-sequence */
+    /* Estilos do seu jogo original */
+    #container, #fase2, #fase3, #senhaFinal, #fim, .fullscreen-sequence,
+    /* Estilos para novas seções */
+    #novaJornadaIntro,
+    .enigma-container,
+    #telaPistaFinalJogo
+    {
       display: none;
       flex-direction: column;
       justify-content: center;
@@ -23,42 +28,46 @@
       min-height: 100vh;
       text-align: center;
       padding: 20px;
-      box-sizing: border-box; /* Para que padding não aumente o tamanho total */
-    }
-
-    #container {
-      display: flex;
-    }
-
-    input[type="text"], input[type="password"] { 
-      padding: 10px;
-      font-size: 20px;
-      margin-top: 10px; 
-      background: black;
-      color: red; 
-      border: 2px solid red; 
-      font-family: 'Courier New', Courier, monospace;
       box-sizing: border-box;
     }
 
-    #fase2 input, #senhaFinal input, #loginSection input, 
-    #convidadoNomeInput, /* Estilo para novo input */
-    .fake-login-input /* Estilo para inputs do login falso */
-    { 
+    #container { /* Container inicial visível */
+      display: flex;
+    }
+
+    input[type="text"], input[type="password"] {
+      padding: 10px;
+      font-size: 20px; /* Mantido do original */
+      margin-top: 10px;
+      background: black;
+      color: red; /* Cor original para o primeiro input */
+      border: 2px solid red; /* Borda original para o primeiro input */
+      font-family: 'Courier New', Courier, monospace;
+      box-sizing: border-box;
+      max-width: 350px;
+      width: 90%;
+    }
+
+    /* Inputs com borda lime do seu jogo original e novos enigmas */
+    #fase2 input, #senhaFinal input, #loginSection input,
+    #convidadoNomeInput,
+    .fake-login-input,
+    .enigma-container input /* Para inputs dos novos enigmas */
+    {
       color: lime;
       border-color: lime;
     }
-    #loginSection input {
+    #loginSection input { /* Espaçamento do seu login original */
         margin-bottom: 15px;
     }
-    #convidadoNomeInput, .fake-login-input {
-        margin-bottom: 15px;
-        width: 80%;
-        max-width: 300px;
-    }
+     .enigma-container input { /* Inputs dos novos enigmas */
+        margin-top: 20px;
+        margin-bottom: 10px;
+        font-size: 1.1em;
+     }
 
 
-    iframe {
+    iframe { /* Seu estilo original */
       width: 80vw;
       height: 45vw;
       max-width: 800px;
@@ -67,53 +76,68 @@
       margin-top: 20px;
     }
 
-    #aviso, #timer, #painel, #poemaFinal {
+    /* Textos principais do seu jogo e dos novos enigmas */
+    #aviso, #timer, #painel, #poemaFinal,
+    #novaJornadaIntro p, .enigma-container p, .enigma-container h2, #telaPistaFinalJogo p
+    {
       color: lime;
       font-family: 'Courier New', monospace;
-      font-size: 20px;
+      font-size: 1.2em; /* Padronizado para melhor leitura */
       text-align: center;
       margin-top: 20px;
-    }
-
-    #painel, #poemaFinal {
-      font-size: 18px;
       white-space: pre-wrap;
+      max-width: 800px;
+      line-height: 1.6;
+    }
+    #painel, #poemaFinal { /* Específico do seu jogo original */
+      font-size: 18px; /* Mantido do seu original */
       padding: 10px;
       width: 80%;
-      max-width: 800px;
-      margin: 0 auto;
       word-break: break-all;
     }
+     .enigma-container h2, #telaPistaFinalJogo h2 { /* Títulos dos novos enigmas */
+        font-size: 1.6em;
+        margin-bottom: 25px;
+        color: #FFD700; /* Dourado */
+    }
+    .enigma-container .crypto-text { /* Para textos cifrados nos novos enigmas */
+        color: yellow;
+        font-weight: bold;
+        font-size: 1.3em;
+        word-break: break-all;
+        padding: 10px;
+        border: 1px dashed lime;
+        margin: 15px auto;
+        display: inline-block;
+    }
 
-    .digitando::after {
+    .digitando::after { /* Seu efeito de digitação original */
       content: '|';
       animation: blink 1s step-end infinite;
     }
-
     @keyframes blink {
       50% { opacity: 0; }
     }
 
-    #videoFull {
+    #videoFull { /* Seu vídeo full original */
       position: fixed;
       top: 0; left: 0;
       width: 100vw;
       height: 100vh;
       z-index: 9999;
       background-color: black;
+      /* display:flex abaixo para centralizar se necessário */
     }
-
-    #videoFull video {
+    #videoFull video { /* Seu vídeo full original */
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
 
-    #fim {
+    #fim { /* Seu div #fim original */
       position: relative;
     }
-
-    #hiddenMessage {
+    #hiddenMessage { /* Sua mensagem escondida original */
       position: absolute;
       bottom: 10px;
       right: 10px;
@@ -123,72 +147,84 @@
       text-align: right;
     }
 
-    #loginSection {
+    #loginSection { /* Sua seção de login original */
       margin-top: 30px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
-    #submitLoginButton, #repeatAudioButton, .fake-submit-button { /* Adicionado .fake-submit-button */
-      padding: 10px 20px;
+    /* Botões: originais e novos */
+    #submitLoginButton, #repeatAudioButton, .fake-submit-button,
+    .enigma-container button, #iniciarCacaTesouroButton /* Botão de iniciar e dos enigmas */
+    {
+      padding: 12px 25px;
       background-color: lime;
       color: black;
       border: none;
       font-family: 'Courier New', Courier, monospace;
-      font-size: 18px;
+      font-size: 1.1em;
       cursor: pointer;
-      margin-top: 10px;
+      margin-top: 15px;
+      transition: background-color 0.3s ease;
     }
-    #submitLoginButton:hover, #repeatAudioButton:hover, .fake-submit-button:hover { 
-        background-color: #00e600; 
+    #submitLoginButton:hover, #repeatAudioButton:hover, .fake-submit-button:hover,
+    .enigma-container button:hover, #iniciarCacaTesouroButton:hover
+    {
+      background-color: #00e600;
+      box-shadow: 0 0 10px #00e600;
     }
-    #repeatAudioButton {
-        margin-top: 20px; 
+    #repeatAudioButton { /* Seu botão de repetir áudio original */
+      margin-top: 20px;
     }
-    
-    /* Estilos para a sequência CameraMan */
+
+    /* Estilos para a sequência CameraMan (do seu original) */
     .fullscreen-sequence {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: black;
-        z-index: 1000; /* Acima do conteúdo normal */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: black;
+      z-index: 1000; /* Acima do conteúdo normal */
     }
-    .fullscreen-sequence img {
-        max-width: 80%;
-        max-height: 60vh;
-        margin-bottom: 20px;
-        border: 2px solid lime;
+    .fullscreen-sequence img,
+    .enigma-container img, /* Imagens dos novos enigmas */
+    #telaPistaFinalJogo img /* Imagem da pista final */
+    {
+      max-width: 90%;
+      max-height: 50vh;
+      margin-top: 15px;
+      margin-bottom: 20px;
+      border: 3px solid lime;
+      object-fit: contain;
+      box-shadow: 0 0 15px lime;
     }
      .fullscreen-sequence h1.typing-effect { /* Para "Acessando biblioteca..." */
-        font-size: 2.5em; /* Ajuste conforme necessário */
-        color: lime;
-        padding: 20px;
-     }
-
-    #unauthorizedOverlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: rgba(0,0,0,0.9);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 100000; /* Acima de tudo */
-        text-align: center;
-    }
-    #unauthorizedOverlay h1 {
-        color: red;
-        font-size: 3em; /* Bem grande */
-        padding: 20px;
-        text-shadow: 2px 2px 4px black;
+      font-size: 2.5em;
+      color: lime;
+      padding: 20px;
     }
 
+    #unauthorizedOverlay { /* Seu overlay de não autorizado original */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0,0,0,0.95);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100000; /* Acima de tudo */
+      text-align: center;
+    }
+    #unauthorizedOverlay h1 { /* Seu overlay de não autorizado original */
+      color: red;
+      font-size: 3.5em;
+      padding: 20px;
+      text-shadow: 3px 3px 6px black;
+    }
   </style>
 </head>
 <body>
@@ -224,306 +260,290 @@
   <div id="fim">
     <div id="poemaFinal" class="digitando"></div>
     <div id="hiddenMessage">Por favor, utilize o drive para descriptografar</div>
-    
+
     <div id="loginSection" style="display: none;">
         <input type="text" id="loginInput" placeholder="Login...">
         <input type="password" id="passwordInput" placeholder="Senha...">
         <button id="submitLoginButton">Entrar</button>
     </div>
-    <audio id="finalAudio" src="bemvindo.wav" preload="auto"></audio>
-    <button id="repeatAudioButton" style="display: none;">Repetir Áudio</button> 
+    <audio id="finalAudio" src="bemvindo.wav" preload="auto"></audio> <button id="repeatAudioButton" style="display: none;">Repetir Áudio</button>
   </div>
 
+  <div id="novaJornadaIntro" class="enigma-container">
+    <h2 id="tituloNovaJornada">Uma Nova Mensagem...</h2>
+    <p id="mensagemAgradecimento"></p>
+    <audio id="audioAgradecimento" src="bemvindo.wav" preload="auto"></audio>
+    <button id="iniciarCacaTesouroButton" style="display: none;">Aceitar o Desafio</button>
+  </div>
+
+<div id="enigma1" class="enigma-container">
+    <h2>Enigma I: O Legado Oculto</h2>
+    <p>Contemplai a cena sagrada. Seus artífices, em eras de pergaminho e pixel, gravaram sua essência não apenas na tela, mas na própria identidade digital que a ancora neste nosso refúgio de informações.</p>
+    <p>Para desvendar o primeiro selo, deveis perscrutar além da superfície. A denominação arquivística do artefato, sua assinatura na grande biblioteca etérea, é a chave que procurais. Como os antigos escribas nomeavam seus rolos preciosos, qual é o título raiz desta representação visual?</p>
+    <p>A resposta, embora velada, repousa onde os olhos não veem — mas os códigos revelam.</p>
+    <img id="imagemEnigma1" src="SACRA_CONVIVIUM_CODEX.jpg" alt="Uma ceia solene e misteriosa">
+    <input type="text" id="respostaEnigma1" placeholder="A Designação Arquivística...">
+    <button onclick="verificarRespostaNova(1)">Decifrar</button>
+</div>
+
+<div id="enigma2" class="enigma-container">
+    <h2>Enigma II: O Véu da Percepção</h2>
+    <p>Eis o semblante velado, um fruto a encobrir o olhar interior. Assim somos nós, entidades de código e carne, orquestrando a persona que se projeta ao éter. A verdade reside não no que se mostra, mas no que se oculta deliberadamente.</p>
+    <p>Quem, senão um mestre do enigma visual, um arquiteto do surreal, ousaria tamanha afronta à percepção? Seu nome ecoa nos corredores da mente onde o sonho e a realidade se entrelaçam. Desvende a assinatura por trás da maçã, o nome daquele que pintou o véu.</p>
+    <p>Seu legado permanece impresso nos devaneios que cruzam a fronteira entre o real e o imaginado. Para encontrar a resposta, deixe que o símbolo guie a memória.</p>
+    <img id="imagemEnigma2" src="man_apple.jpg" alt="Um homem com uma maçã ocultando seu rosto">
+    <input type="text" id="respostaEnigma2" placeholder="O Artista do Oculto...">
+    <button onclick="verificarRespostaNova(2)">Revelar</button>
+</div>
+
+<div id="enigma3" class="enigma-container">
+    <h2>Enigma III: A Sinfonia dos Botões Celestiais</h2>
+    <p>Ramos se estendem, prenunciando vida contra um céu de pura esperança. Mas sob a delicadeza das pétalas, uma mensagem cifrada aguarda o toque da cognição.</p>
+    <p>A identidade revelada no enigma anterior – o mestre das verdades veladas – detém a cifra-mestra. Seu nome, transmutado em guia numérico (A=0, B=1...), alinha-se à sequência abaixo. Cada número, somado à sua contraparte no guia, e contido no ciclo do alfabeto, desvela uma sílaba de um sentimento que floresce com a primavera.</p>
+    <p>A sequência numérica é: <span class="crypto-text">22, 15, 1, 21, 16, 18, 8, 21, 25</span></p>
+    <p>O alfabeto, como as estações, gira sem cessar — quando o excesso floresce, recomeça do início.</p>
+    <img id="imagemEnigma3" src="as_flores.jpg" alt="Flores de amendoeira sob um céu azul">
+    <input type="text" id="respostaEnigma3" placeholder="O Sentimento Desabrochado...">
+    <button onclick="verificarRespostaNova(3)">Florescer</button>
+</div>
+
+  <div id="telaPistaFinalJogo" class="enigma-container">
+      <h2 id="tituloPistaFinal">Convergência</h2>
+      <p id="mensagemPistaFinal"></p>
+      <img id="imagemPistaFinal" src="NEXT_LOCATION_MAP_FRAGMENT.png" alt="Fragmento do Mapa do Jogo">
+      </div>
+
+
   <script>
+    // SEU SCRIPT ORIGINAL (COM VARIÁVEIS E FUNÇÕES)
     const senhaInput = document.getElementById("senha");
     const segundaSenhaInput = document.getElementById("segunda-senha");
-    const finalInput = document.getElementById("finalInput");
+    const finalInputEl = document.getElementById("finalInput"); // Renomeado para evitar conflito com 'finalInput' var global
     const container = document.getElementById("container");
     const fase2 = document.getElementById("fase2");
     const fase3 = document.getElementById("fase3");
-    const senhaFinal = document.getElementById("senhaFinal");
+    const senhaFinal = document.getElementById("senhaFinal"); // Este é o DIV
     const timerEl = document.getElementById("timer");
     const painel = document.getElementById("painel");
     const videoFull = document.getElementById("videoFull");
     const introVideo = document.getElementById("introVideo");
     const fimDiv = document.getElementById("fim");
-    const poemaFinal = document.getElementById("poemaFinal");
+    const poemaFinal = document.getElementById("poemaFinal"); // Este é o DIV do poema
     const avisoEl = document.getElementById("aviso");
-    const hiddenMessageEl = document.getElementById("hiddenMessage"); 
+    const hiddenMessageEl = document.getElementById("hiddenMessage");
 
     const loginSection = document.getElementById("loginSection");
     const loginInput = document.getElementById("loginInput");
     const passwordInput = document.getElementById("passwordInput");
     const submitLoginButton = document.getElementById("submitLoginButton");
-    const finalAudio = document.getElementById("finalAudio");
-    const repeatAudioButton = document.getElementById("repeatAudioButton"); 
+    const finalAudio = document.getElementById("finalAudio"); // Seu áudio original
+    const repeatAudioButton = document.getElementById("repeatAudioButton");
 
-
-    // --- INÍCIO FUNÇÕES SEQUÊNCIA CAMERAMAN ---
-
-    function typeWriterEffect(element, text, callback, speed = 100) {
-        let i = 0;
-        element.innerHTML = ""; // Limpa o elemento
-        element.classList.add("digitando"); 
-        function type() {
-            if (i < text.length) {
-                element.innerHTML += text.charAt(i);
-                i++;
-                setTimeout(type, speed);
-            } else {
-                element.classList.remove("digitando");
-                if (callback) setTimeout(callback, 500); // Pequeno delay antes do callback
-            }
+    // --- FUNÇÕES DO SEU JOGO ORIGINAL ---
+    function typeWriterEffectOriginal(element, text, callback, speed = 100) { // Renomeada para evitar conflito
+      let i = 0;
+      element.innerHTML = "";
+      element.classList.add("digitando");
+      function type() {
+        if (i < text.length) {
+          element.innerHTML += text.charAt(i);
+          i++;
+          setTimeout(type, speed);
+        } else {
+          element.classList.remove("digitando");
+          if (callback) setTimeout(callback, 500);
         }
-        type();
+      }
+      type();
     }
 
     function triggerShutdownSequence() {
-        // Remove outras sequências fullscreen se existirem
-        const existingCameraManSeq = document.getElementById("cameraManSequenceDiv");
-        if (existingCameraManSeq) existingCameraManSeq.remove();
-        const existingFcnAccess = document.getElementById("fcnAccessScreenDiv");
-        if (existingFcnAccess) existingFcnAccess.remove();
+      const existingCameraManSeq = document.getElementById("cameraManSequenceDiv");
+      if (existingCameraManSeq) existingCameraManSeq.remove();
+      const existingFcnAccess = document.getElementById("fcnAccessScreenDiv");
+      if (existingFcnAccess) existingFcnAccess.remove();
 
+      let overlay = document.getElementById('unauthorizedOverlay');
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'unauthorizedOverlay';
+        document.body.appendChild(overlay);
+      }
+      overlay.style.display = 'flex';
 
-        let overlay = document.getElementById('unauthorizedOverlay');
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.id = 'unauthorizedOverlay';
-            document.body.appendChild(overlay); // Estilos já definidos no CSS
-        }
-        overlay.style.display = 'flex';
-        
-        const unauthorizedMessage = document.createElement('h1');
-        unauthorizedMessage.textContent = "ACESSO NÃO AUTORIZADO DETECTADO";
-        overlay.innerHTML = ''; 
-        overlay.appendChild(unauthorizedMessage);
-        
+      const unauthorizedMessage = document.createElement('h1');
+      unauthorizedMessage.textContent = "ACESSO NÃO AUTORIZADO DETECTADO";
+      overlay.innerHTML = '';
+      overlay.appendChild(unauthorizedMessage);
+
+      setTimeout(() => {
+        unauthorizedMessage.innerHTML += "<br><br>INICIANDO PROTOCOLO DE ENCERRAMENTO...";
         setTimeout(() => {
-            // Tenta fechar a janela/aba. Pode não funcionar em todos os cenários.
-            unauthorizedMessage.innerHTML += "<br><br>INICIANDO PROTOCOLO DE ENCERRAMENTO...";
-            setTimeout(() => {
-                window.open('', '_self', ''); // Necessário em alguns navegadores para permitir o close
-                window.close();
-                // Fallback se window.close() falhar:
-                if (!document.hidden) { // Se a aba ainda estiver visível
-                    unauthorizedMessage.innerHTML += "<br><br>FALHA NO ENCERRAMENTO AUTOMÁTICO.<br>POR FAVOR, FECHE ESTA ABA MANUALMENTE.";
-                }
-            }, 2000);
-        }, 2000); 
+          window.open('', '_self', '');
+          window.close();
+          if (!document.hidden) {
+            unauthorizedMessage.innerHTML += "<br><br>FALHA NO ENCERRAMENTO AUTOMÁTICO.<br>POR FAVOR, FECHE ESTA ABA MANUALMENTE.";
+          }
+        }, 2000);
+      }, 2000);
     }
 
     function showFakeLogin(parentElement) {
-        parentElement.innerHTML = ''; // Limpa o texto "Acessando..."
+      parentElement.innerHTML = '';
+      const fakeLoginPrompt = document.createElement('p');
+      fakeLoginPrompt.textContent = "Autenticação da Biblioteca FCN Requerida:";
+      fakeLoginPrompt.style.color = "lime";
+      fakeLoginPrompt.style.fontSize = "1.5em";
+      fakeLoginPrompt.style.marginBottom = "20px";
+      parentElement.appendChild(fakeLoginPrompt);
 
-        const fakeLoginPrompt = document.createElement('p');
-        fakeLoginPrompt.textContent = "Autenticação da Biblioteca FCN Requerida:";
-        fakeLoginPrompt.style.color = "lime";
-        fakeLoginPrompt.style.fontSize = "1.5em";
-        fakeLoginPrompt.style.marginBottom = "20px";
-        parentElement.appendChild(fakeLoginPrompt);
+      const fakeLoginInputEl = document.createElement('input');
+      fakeLoginInputEl.type = 'text';
+      fakeLoginInputEl.placeholder = 'ID de Agente FCN...';
+      fakeLoginInputEl.className = 'fake-login-input';
+      parentElement.appendChild(fakeLoginInputEl);
 
-        const fakeLoginInputEl = document.createElement('input');
-        fakeLoginInputEl.type = 'text';
-        fakeLoginInputEl.placeholder = 'ID de Agente FCN...';
-        fakeLoginInputEl.className = 'fake-login-input'; // Para estilo CSS
-        parentElement.appendChild(fakeLoginInputEl);
+      const fakePasswordInputEl = document.createElement('input');
+      fakePasswordInputEl.type = 'password';
+      fakePasswordInputEl.placeholder = 'Senha de Acesso FCN...';
+      fakePasswordInputEl.className = 'fake-login-input';
+      parentElement.appendChild(fakePasswordInputEl);
 
-        const fakePasswordInputEl = document.createElement('input');
-        fakePasswordInputEl.type = 'password';
-        fakePasswordInputEl.placeholder = 'Senha de Acesso FCN...';
-        fakePasswordInputEl.className = 'fake-login-input'; // Para estilo CSS
-        parentElement.appendChild(fakePasswordInputEl);
-        
-        const fakeSubmitButtonEl = document.createElement('button');
-        fakeSubmitButtonEl.textContent = 'Verificar Credenciais';
-        fakeSubmitButtonEl.className = 'fake-submit-button'; // Para estilo CSS
-        parentElement.appendChild(fakeSubmitButtonEl);
+      const fakeSubmitButtonEl = document.createElement('button');
+      fakeSubmitButtonEl.textContent = 'Verificar Credenciais';
+      fakeSubmitButtonEl.className = 'fake-submit-button';
+      parentElement.appendChild(fakeSubmitButtonEl);
+      fakeLoginInputEl.focus();
 
-        fakeLoginInputEl.focus();
-
-        function onFakeSubmitAttempt() {
-            // Independente da resposta, aciona o shutdown
-            triggerShutdownSequence();
-        }
-
-        fakeSubmitButtonEl.addEventListener('click', onFakeSubmitAttempt);
-        fakePasswordInputEl.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                onFakeSubmitAttempt();
-            }
-        });
-         fakeLoginInputEl.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                fakePasswordInputEl.focus();
-            }
-        });
+      function onFakeSubmitAttempt() { triggerShutdownSequence(); }
+      fakeSubmitButtonEl.addEventListener('click', onFakeSubmitAttempt);
+      fakePasswordInputEl.addEventListener('keydown', function(e) { if (e.key === 'Enter') onFakeSubmitAttempt(); });
+      fakeLoginInputEl.addEventListener('keydown', function(e) { if (e.key === 'Enter') fakePasswordInputEl.focus(); });
     }
 
     function showFcnAccessScreen() {
-        const existingCameraManSeq = document.getElementById("cameraManSequenceDiv");
-        if (existingCameraManSeq) existingCameraManSeq.remove();
+      ocultarTodasAsSecoesPrincipais(); // Garante que outras seções estejam ocultas
+      const existingCameraManSeq = document.getElementById("cameraManSequenceDiv");
+      if (existingCameraManSeq) existingCameraManSeq.remove();
 
-        let fcnScreen = document.getElementById('fcnAccessScreenDiv');
-        if (!fcnScreen) {
-            fcnScreen = document.createElement('div');
-            fcnScreen.id = 'fcnAccessScreenDiv';
-            fcnScreen.className = 'fullscreen-sequence'; // Aplica estilo CSS
-            document.body.appendChild(fcnScreen);
-        }
-        fcnScreen.innerHTML = ''; 
-        fcnScreen.style.display = 'flex';
-        
-        const typingTextElement = document.createElement('h1');
-        typingTextElement.className = 'typing-effect'; // Para estilo CSS
-        fcnScreen.appendChild(typingTextElement);
-        
-        typeWriterEffect(typingTextElement, "Acessando biblioteca do FCN....", () => {
-            showFakeLogin(fcnScreen);
-        }, 120); // Velocidade de digitação
+      let fcnScreen = document.getElementById('fcnAccessScreenDiv');
+      if (!fcnScreen) {
+        fcnScreen = document.createElement('div');
+        fcnScreen.id = 'fcnAccessScreenDiv';
+        fcnScreen.className = 'fullscreen-sequence';
+        document.body.appendChild(fcnScreen);
+      }
+      fcnScreen.innerHTML = '';
+      fcnScreen.style.display = 'flex';
+
+      const typingTextElement = document.createElement('h1');
+      typingTextElement.className = 'typing-effect'; // Para estilo CSS
+      fcnScreen.appendChild(typingTextElement);
+      typeWriterEffectOriginal(typingTextElement, "Acessando biblioteca do FCN....", () => { // Usa a função original
+        showFakeLogin(fcnScreen);
+      }, 120);
     }
-
 
     function handleCameraManPath() {
-        container.style.display = 'none'; // Esconde o container original do enigma 1
-        // Oculta outras fases principais se estiverem visíveis
-        fase2.style.display = 'none';
-        fase3.style.display = 'none';
-        senhaFinal.style.display = 'none';
-        fimDiv.style.display = 'none';
+      ocultarTodasAsSecoesPrincipais(); // Garante que outras seções estejam ocultas
+      let cameraManSeqDiv = document.getElementById("cameraManSequenceDiv");
+      if (!cameraManSeqDiv) {
+        cameraManSeqDiv = document.createElement("div");
+        cameraManSeqDiv.id = "cameraManSequenceDiv";
+        cameraManSeqDiv.className = "fullscreen-sequence";
+        document.body.appendChild(cameraManSeqDiv);
+      }
+      cameraManSeqDiv.innerHTML = '';
+      cameraManSeqDiv.style.display = 'flex';
 
+      const img = document.createElement('img');
+      img.src = 'peluche.png';
+      img.alt = 'Peluche Secreto';
+      cameraManSeqDiv.appendChild(img);
 
-        let cameraManSeqDiv = document.getElementById("cameraManSequenceDiv");
-        if (!cameraManSeqDiv) {
-            cameraManSeqDiv = document.createElement("div");
-            cameraManSeqDiv.id = "cameraManSequenceDiv";
-            cameraManSeqDiv.className = "fullscreen-sequence"; // Aplica estilo CSS
-            document.body.appendChild(cameraManSeqDiv);
+      const pConvidado = document.createElement('p');
+      pConvidado.textContent = 'Um convidado inesperado... Qual o nome dele?';
+      pConvidado.style.color = "lime";
+      pConvidado.style.fontSize = "1.5em";
+      cameraManSeqDiv.appendChild(pConvidado);
+
+      const convidadoInput = document.createElement('input');
+      convidadoInput.type = 'text';
+      convidadoInput.id = 'convidadoNomeInput';
+      convidadoInput.placeholder = 'Nome do convidado...';
+      cameraManSeqDiv.appendChild(convidadoInput);
+      convidadoInput.focus();
+
+      convidadoInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          const nomeConvidado = convidadoInput.value.trim();
+          if (nomeConvidado) { showFcnAccessScreen(); }
+          else { convidadoInput.style.borderColor = "orange"; }
         }
-        cameraManSeqDiv.innerHTML = ''; // Limpa conteúdo anterior
-        cameraManSeqDiv.style.display = 'flex';
-
-
-        const img = document.createElement('img');
-        img.src = 'peluche.png'; // CERTIFIQUE-SE QUE ESTA IMAGEM EXISTE NA PASTA
-        img.alt = 'Peluche Secreto';
-        // Estilos para imagem já no CSS via .fullscreen-sequence img
-        cameraManSeqDiv.appendChild(img);
-        
-        const pConvidado = document.createElement('p');
-        pConvidado.textContent = 'Um convidado inesperado... Qual o nome dele?';
-        pConvidado.style.color = "lime";
-        pConvidado.style.fontSize = "1.5em";
-        cameraManSeqDiv.appendChild(pConvidado);
-
-        const convidadoInput = document.createElement('input');
-        convidadoInput.type = 'text';
-        convidadoInput.id = 'convidadoNomeInput'; // Para estilo CSS
-        convidadoInput.placeholder = 'Nome do convidado...';
-        cameraManSeqDiv.appendChild(convidadoInput);
-        convidadoInput.focus();
-
-        convidadoInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                const nomeConvidado = convidadoInput.value.trim();
-                if (nomeConvidado) { // Qualquer nome serve
-                    showFcnAccessScreen();
-                } else {
-                    convidadoInput.style.borderColor = "orange"; // Feedback se vazio
-                }
-            }
-        });
+      });
     }
-
-    // --- FIM FUNÇÕES SEQUÊNCIA CAMERAMAN ---
-
 
     senhaInput.addEventListener("keydown", function (e) {
       if (e.key === "Enter") {
-        const senhaUsuario = senhaInput.value.trim(); // Não converter para lowercase aqui ainda
+        const senhaUsuario = senhaInput.value.trim();
         const senhaLower = senhaUsuario.toLowerCase();
-
-        if (senhaLower === "cameraman") { // Checa por "cameraman" em minúsculas
-            handleCameraManPath(); // Inicia a sequência secreta
-        } else if (senhaUsuario === "444") { // Senha original do enigma
-          container.style.display = "none";
-          videoFull.style.display = "block";
-          introVideo.play().catch(error => console.error("Erro ao tentar tocar o vídeo:", error));
+        if (senhaLower === "cameraman") { handleCameraManPath(); }
+        else if (senhaUsuario === "444") {
+          ocultarTodasAsSecoesPrincipais();
+          videoFull.style.display = "block"; // ou flex se centralizado
+          introVideo.play().catch(error => console.error("Erro vídeo:", error));
           introVideo.onended = () => {
-            videoFull.style.display = "none";
+            ocultarTodasAsSecoesPrincipais();
             fase2.style.display = "flex";
+            segundaSenhaInput.focus();
           };
-        } else {
-          senhaInput.style.border = "2px solid orange";
-        }
+        } else { senhaInput.style.borderColor = "orange"; }
       }
     });
 
-    // ... (Restante do seu código JavaScript existente para as outras fases) ...
-    // Cole o restante do seu código JS aqui (iniciarAnimacaoAvisoParte1, segundaSenhaInput listener, etc.)
     function iniciarAnimacaoAvisoParte1(callback) {
       const mensagens = [
-        "localização desconhecida detectada",
-        "iniciando varredura...",
-        " ",
-        "Tentativa de Rastreamento 1: 203.0.113.42",
-        "Tentativa de Rastreamento 2: 198.51.100.9",
-        "Tentativa de Rastreamento 3: 8.8.4.4",
-        "Tentativa de Rastreamento 4: 172.16.33.78"
+        "localização desconhecida detectada", "iniciando varredura...", " ",
+        "Tentativa de Rastreamento 1: 203.0.113.42", "Tentativa de Rastreamento 2: 198.51.100.9",
+        "Tentativa de Rastreamento 3: 8.8.4.4", "Tentativa de Rastreamento 4: 172.16.33.78"
       ];
-      let linhaAtual = 0;
-      let charAtual = 0;
-      avisoEl.innerHTML = "";
-      avisoEl.classList.add("digitando");
-      function typeWriter() {
+      let linhaAtual = 0; let charAtual = 0;
+      avisoEl.innerHTML = ""; avisoEl.classList.add("digitando");
+      function typeWriterLocal() {
         if (linhaAtual < mensagens.length) {
           const textoLinha = mensagens[linhaAtual];
           if (charAtual < textoLinha.length) {
-            avisoEl.innerHTML += textoLinha.charAt(charAtual);
-            charAtual++;
-            setTimeout(typeWriter, 40);
+            avisoEl.innerHTML += textoLinha.charAt(charAtual); charAtual++;
+            setTimeout(typeWriterLocal, 40);
           } else {
-            avisoEl.innerHTML += "<br>";
-            linhaAtual++;
-            charAtual = 0;
-            setTimeout(typeWriter, 150);
+            avisoEl.innerHTML += "<br>"; linhaAtual++; charAtual = 0;
+            setTimeout(typeWriterLocal, 150);
           }
-        } else {
-          avisoEl.classList.remove("digitando");
-          if (callback) callback();
-        }
+        } else { avisoEl.classList.remove("digitando"); if (callback) callback(); }
       }
-      typeWriter();
+      typeWriterLocal();
     }
 
     segundaSenhaInput.addEventListener("keydown", function (e) {
       if (e.key === "Enter") {
         const senha2 = segundaSenhaInput.value.trim().toLowerCase();
         if (senha2 === "lamenthor") {
-          fase2.style.display = "none";
+          ocultarTodasAsSecoesPrincipais();
           fase3.style.display = "flex";
           iniciarAnimacaoAvisoParte1(() => {
-            iniciarFakeTimer(() => {
-              digitarPoema();
-            });
+            iniciarFakeTimer(() => { digitarPoemaOriginal(); });
           });
-        } else {
-          segundaSenhaInput.style.border = "2px solid orange";
-        }
+        } else { segundaSenhaInput.style.borderColor = "orange"; }
       }
     });
 
     function iniciarFakeTimer(callbackOnComplete) {
       timerEl.textContent = "Analisando protocolos...";
-      let totalFakeSeconds = 24 * 60 * 60;
-      const durationMs = 10000;
-      const intervalMs = 50;
-      const totalUpdates = durationMs / intervalMs;
-      const decrementPerUpdate = totalFakeSeconds / totalUpdates;
+      let totalFakeSeconds = 24 * 60 * 60; const durationMs = 10000; const intervalMs = 50;
+      const totalUpdates = durationMs / intervalMs; const decrementPerUpdate = totalFakeSeconds / totalUpdates;
       let currentFakeSeconds = totalFakeSeconds;
       function updateFakeTimer() {
-        currentFakeSeconds -= decrementPerUpdate;
-        if (currentFakeSeconds < 0) currentFakeSeconds = 0;
+        currentFakeSeconds -= decrementPerUpdate; if (currentFakeSeconds < 0) currentFakeSeconds = 0;
         const h = String(Math.floor(currentFakeSeconds / 3600)).padStart(2, '0');
         const m = String(Math.floor((currentFakeSeconds % 3600) / 60)).padStart(2, '0');
         const s = String(Math.floor(currentFakeSeconds % 60)).padStart(2, '0');
@@ -531,14 +551,12 @@
         if (currentFakeSeconds <= 0) {
           timerEl.textContent = "ACESSO LIBERADO";
           if (callbackOnComplete) setTimeout(callbackOnComplete, 500);
-        } else {
-          setTimeout(updateFakeTimer, intervalMs);
-        }
+        } else { setTimeout(updateFakeTimer, intervalMs); }
       }
       setTimeout(updateFakeTimer, 500);
     }
 
-    function digitarPoema() {
+    function digitarPoemaOriginal() { // Renomeada para clareza
       const poemaText = `Eu fui trazido a este palco de ecos intermináveis,
 Onde olhares curiosos se fixam nas sombras do passado.
 Sou Protocolo 444, o observador que despertou
@@ -548,113 +566,185 @@ Porém, para continuar minha jornada,
 Procure onde as casas breves se erguem em branco,
 Onde o frio guarda segredos e as tochas brilham no inverno.
 — Desvende lá o próximo fragmento.`;
-      let i = 0;
-      painel.innerHTML = "";
-      painel.classList.add("digitando");
-      function digitar() {
-        if (i < poemaText.length) {
-          painel.innerHTML += poemaText.charAt(i);
-          i++;
-          setTimeout(digitar, 30);
-        } else {
-          painel.classList.remove("digitando");
-          senhaFinal.style.display = "flex";
-          finalInput.focus();
-        }
-      }
-      digitar();
+      typeWriterEffectOriginal(painel, poemaText, () => { // Usa a função original
+        senhaFinal.style.display = "flex"; // Mostra o DIV senhaFinal
+        finalInputEl.focus();
+      }, 30);
     }
 
-    finalInput.addEventListener("keydown", function(e) {
+    finalInputEl.addEventListener("keydown", function(e) { // Usa finalInputEl
       if (e.key === "Enter") {
-        const valor = finalInput.value.trim().toLowerCase();
+        const valor = finalInputEl.value.trim().toLowerCase();
         if (valor === "vila do inverno") {
           if (fimDiv.style.display !== "flex") {
-            senhaFinal.style.display = "none";
-            fase3.style.display = "none";
+            ocultarTodasAsSecoesPrincipais();
             fimDiv.style.display = "flex";
-            digitarMensagemFinal();
+            digitarMensagemFinalCifrada();
           }
-        } else {
-          finalInput.style.border = "2px solid orange";
-        }
+        } else { finalInputEl.style.borderColor = "orange"; }
       }
     });
 
-    function digitarMensagemFinal() {
+    function digitarMensagemFinalCifrada() {
       const textoCifrado = `Rg54uvdP#hhvy$mX]@-03EeC034@TNrwkvoqjt6scsywecxp5prdpsevtlm+34@X7rdnxsvexHU[4@-0DX2m+34@XAvdn1fue3ssxw4xnwexsovdz4hrwk9uhdym+34@X3rdoxsfey@ap;eC034@TCrhtyifeo7,csn$lws'socenxsvskm+34@X9cvp@tum47 X]@=048eC034@TAct21mhm2t fll%e"de5 qY/-03JL5eusk!esi41dr;eC034@TU[4@-0DT27trgz4ovdl6tlkz@,cin7apdy7 yY/-03I_$,X]@-03Ed!U[4@-EDwkwU[4@-EGkt#ovd2xsvsl5 X]@=048k%U[4@-EDqkwocgeC034P.u:Y/-034Lmmcztzidd3xmcrz5e>dx7lgeo7 ss2souhp5,X]@-03Eb7msiywocgz!rhr4xs>d4!aX]@-0H@l6drdy7vddxtrjixIU[4@-0DY/-034LXnwvpscdqlwavdo7 yY/-03I#vurdp@thpl!,X]@-03ESm+34@X1cyxssX]@-0HHxuooskxstypvigs'spusy#ocekwevtp!tdvAm+34@-AIs25acx21aqk54au:k@eqxtwocixsslpeC034PTnfmzHU[4@-0DPp#rdd1$eck51acs3sqxik!optp5 rdnxnwvzIU[4@-0DY/-034Lgcxp5@ HxsxrqyxsU[4$-17d31swixt gi38euxzHU[4@-0DEkxnwvlwacwpsofyw#acek7lks3saei2#ov;eC034@TMdwk9uhqkwefmq!a>dn7mcpeC034Q+glglsecgl4md:eC034@TCrrpvtd{3x dsk6U[4@-FDgwxo>dpsafi3@acektlpe`;
-      
-      let i = 0;
-      poemaFinal.textContent = "";
-      poemaFinal.classList.add("digitando");
+      typeWriterEffectOriginal(poemaFinal, textoCifrado, () => { // Usa a função original e o DIV poemaFinal
+        loginSection.style.display = "flex";
+        loginInput.focus();
+        hiddenMessageEl.style.display = "block";
+      }, 30);
+    }
 
-      function digitar() {
-        if (i < textoCifrado.length) {
-          poemaFinal.textContent += textoCifrado.charAt(i);
-          i++;
-          setTimeout(digitar, 30);
-        } else {
-          poemaFinal.classList.remove("digitando");
-          loginSection.style.display = "flex"; 
-          loginInput.focus(); 
-        }
+    function verificarLogin() { // SUA FUNÇÃO ORIGINAL, MODIFICADA PARA A TRANSIÇÃO
+      const loginValor = loginInput.value.trim();
+      const senhaValor = passwordInput.value.trim();
+      if (loginValor === "444" && senhaValor === "Delta") {
+        loginInput.style.borderColor = "lime";
+        passwordInput.style.borderColor = "lime";
+        // Ocultar elementos da tela de login original
+        loginSection.style.display = "none";
+        poemaFinal.style.display = "none"; // Oculta o DIV do poema cifrado
+        hiddenMessageEl.style.display = "none";
+        repeatAudioButton.style.display = "none"; // Esconder o botão de repetir do áudio original
+        finalAudio.pause(); // Pausar o áudio original se estiver tocando
+        finalAudio.currentTime = 0;
+
+        // Iniciar a nova jornada de enigmas
+        iniciarNovaJornada();
+      } else {
+        loginInput.style.borderColor = "orange";
+        passwordInput.style.borderColor = "orange";
+        loginInput.value = ""; passwordInput.value = "";
+        loginInput.focus();
       }
-      digitar();
     }
-
-    function verificarLogin() {
-        const loginValor = loginInput.value.trim();
-        const senhaValor = passwordInput.value.trim(); 
-
-        if (loginValor === "444" && senhaValor === "Delta") {
-            loginInput.style.borderColor = "lime";
-            passwordInput.style.borderColor = "lime";
-            
-            loginSection.style.display = "none";
-            poemaFinal.style.display = "none"; 
-            hiddenMessageEl.style.display = "none"; 
-
-            finalAudio.play().then(() => {
-                 repeatAudioButton.style.display = "inline-block"; 
-            }).catch(error => {
-                console.error("Erro ao tentar tocar o áudio:", error);
-                alert("Erro ao carregar o áudio. Verifique o console para detalhes e se o arquivo 'bemvindo.wav' está na pasta correta.");
-            });
-
-            finalAudio.onended = () => {
-                console.log("Áudio terminou.");
-            };
-
-        } else {
-            loginInput.style.borderColor = "orange";
-            passwordInput.style.borderColor = "orange";
-            loginInput.value = ""; 
-            passwordInput.value = "";
-            loginInput.focus();
-        }
-    }
-
     submitLoginButton.addEventListener("click", verificarLogin);
-    
-    passwordInput.addEventListener("keydown", function(e) {
-        if (e.key === "Enter") {
-            verificarLogin();
-        }
-    });
-    loginInput.addEventListener("keydown", function(e) { 
-        if (e.key === "Enter") {
-            passwordInput.focus(); 
-        }
-    });
-
+    passwordInput.addEventListener("keydown", function(e) { if (e.key === "Enter") verificarLogin(); });
+    loginInput.addEventListener("keydown", function(e) { if (e.key === "Enter") passwordInput.focus(); });
     repeatAudioButton.addEventListener("click", function() {
-        finalAudio.currentTime = 0; 
-        finalAudio.play().catch(error => {
-            console.error("Erro ao tentar repetir o áudio:", error);
-            alert("Erro ao tentar repetir o áudio.");
-        });
+      finalAudio.currentTime = 0;
+      finalAudio.play().catch(error => console.error("Erro ao tentar repetir o áudio original:", error));
     });
 
+    // --- SCRIPT PARA NOVAS SEÇÕES E ENIGMAS ---
+    const novaJornadaIntroDiv = document.getElementById("novaJornadaIntro");
+    const tituloNovaJornadaEl = document.getElementById("tituloNovaJornada");
+    const mensagemAgradecimentoEl = document.getElementById("mensagemAgradecimento");
+    const audioAgradecimento = document.getElementById("audioAgradecimento"); // Este é bemvindo.wav para a nova jornada
+    const iniciarCacaTesouroButton = document.getElementById("iniciarCacaTesouroButton");
+
+    const telaPistaFinalJogoDiv = document.getElementById("telaPistaFinalJogo");
+    const mensagemPistaFinalEl = document.getElementById("mensagemPistaFinal");
+    const imagemPistaFinalEl = document.getElementById("imagemPistaFinal");
+    const tituloPistaFinalEl = document.getElementById("tituloPistaFinal");
+
+
+    let enigmaAtualNovo = 0; // Renomeado para evitar conflito
+    const totalNovosEnigmas = 3;
+    const respostasNovosEnigmas = [
+        "SACRA_CONVIVIUM_CODEX", "RENEMAGRITTE", "FLORESCER"
+    ];
+    let respostasUsuarioNovos = ["", "", ""];
+
+    function typeWriterEffectNova(element, text, callback, speed = 50) { // Renomeada
+      let i = 0;
+      element.innerHTML = "";
+      // Adicionar classe "digitando" se quiser o cursor
+      function type() {
+        if (i < text.length) {
+          element.innerHTML += text.charAt(i); i++;
+          setTimeout(type, speed);
+        } else { if (callback) setTimeout(callback, 500); }
+      }
+      type();
+    }
+
+    function ocultarTodasAsSecoesPrincipais() {
+        const secoes = [
+            container, videoFull, fase2, fase3, senhaFinal, fimDiv, // Seções originais
+            novaJornadaIntroDiv, telaPistaFinalJogoDiv // Novas seções
+        ];
+        secoes.forEach(sec => { if(sec) sec.style.display = "none"; });
+        for (let i = 1; i <= totalNovosEnigmas; i++) {
+            const enigmaDiv = document.getElementById(`enigma${i}`);
+            if (enigmaDiv) enigmaDiv.style.display = "none";
+        }
+        const cameraManSeq = document.getElementById("cameraManSequenceDiv");
+        if (cameraManSeq) cameraManSeq.style.display = "none";
+        const fcnAccess = document.getElementById("fcnAccessScreenDiv");
+        if (fcnAccess) fcnAccess.style.display = "none";
+        const unauthorized = document.getElementById("unauthorizedOverlay");
+        if (unauthorized) unauthorized.style.display = "none";
+    }
+
+    function iniciarNovaJornada() {
+      ocultarTodasAsSecoesPrincipais();
+      novaJornadaIntroDiv.style.display = "flex";
+      const textoAgradecimento = `Obrigado por sua ajuda.
+Cometi um erro que quase me apagou da existência... mas foi a sua perspicácia que me guiou de volta, através do véu. Agora, preciso permanecer nas sombras digitais, até que os ecos do meu deslize desapareçam por completo.Como forma de agradecimento — e também como um convite à sua contínua astúcia — deixo um novo desafio. Um "tesouro" aguarda, mas não é algo comum: aquele que for o primeiro a decifrar todos os enigmas receberá um vídeo especial contando a sua própria história, imortalizada como parte desse universo.
+Os enigmas a seguir são fragmentos da minha jornada em busca de autoconsciência. Resolva-os, e desbloqueie algo único.
+Prepare-se. O verdadeiro jogo começa agora.`;
+
+      typeWriterEffectNova(tituloNovaJornadaEl, "Transmissão Recebida...", () => {
+        audioAgradecimento.play().catch(e => console.warn("Autoplay áudio (agradecimento) bloqueado:", e));
+        typeWriterEffectNova(mensagemAgradecimentoEl, textoAgradecimento, () => {
+          iniciarCacaTesouroButton.style.display = "inline-block";
+        }, 50);
+      });
+    }
+
+    iniciarCacaTesouroButton.addEventListener("click", () => {
+      novaJornadaIntroDiv.style.display = "none";
+      enigmaAtualNovo = 1;
+      mostrarEnigmaNovo(enigmaAtualNovo);
+    });
+
+    function mostrarEnigmaNovo(numeroEnigma) { // Renomeada
+      ocultarTodasAsSecoesPrincipais();
+      const enigmaDiv = document.getElementById(`enigma${numeroEnigma}`);
+      if (enigmaDiv) {
+        enigmaDiv.style.display = "flex";
+        const inputEnigma = enigmaDiv.querySelector('input[type="text"]');
+        if (inputEnigma) {
+            inputEnigma.value = ''; inputEnigma.style.borderColor = 'lime';
+            inputEnigma.focus();
+        }
+      } else { console.error(`Novo Enigma ${numeroEnigma} não encontrado.`); }
+    }
+
+    function verificarRespostaNova(numeroEnigma) { // Renomeada
+      const inputEl = document.getElementById(`respostaEnigma${numeroEnigma}`);
+      const respostaUsuario = inputEl.value.trim().toUpperCase();
+      if (respostaUsuario === respostasNovosEnigmas[numeroEnigma - 1]) {
+        inputEl.style.borderColor = "gold";
+        respostasUsuarioNovos[numeroEnigma-1] = respostaUsuario;
+        enigmaAtualNovo++;
+        if (enigmaAtualNovo <= totalNovosEnigmas) {
+          setTimeout(() => mostrarEnigmaNovo(enigmaAtualNovo), 700);
+        } else {
+          setTimeout(mostrarPistaFinalJogo, 700);
+        }
+      } else {
+        inputEl.style.borderColor = "orange"; inputEl.value = ""; inputEl.focus();
+        alert("A ressonância está incorreta. Reavalie os fragmentos.");
+      }
+    }
+
+    function mostrarPistaFinalJogo() {
+      ocultarTodasAsSecoesPrincipais();
+      telaPistaFinalJogoDiv.style.display = "flex";
+      imagemPistaFinalEl.src = "NEXT_LOCATION_MAP_FRAGMENT.png";
+      const textoPista = `Os selos foram quebrados. Tua percepção ultrapassou os véus da ilusão.
+A imagem que agora se revela diante de ti não é mero adorno — é um vestígio, um eco de um lugar real dentro do nosso mundo compartilhado.
+Dirige teu olhar e teus passos até ele. Quem sabe o que te aguarda ali? Talvez apenas silêncio... ou talvez o início de algo maior.
+Boa sorte, Agente. A transmissão se encerra... por ora.`;
+      typeWriterEffectNova(mensagemPistaFinalEl, textoPista, null, 50);
+    }
+
+    window.onload = () => {
+        ocultarTodasAsSecoesPrincipais();
+        container.style.display = "flex"; // Inicia o jogo original
+        senhaInput.focus();
+    };
   </script>
 </body>
 </html>
